@@ -1,0 +1,26 @@
+body {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+#algolia-search {
+	width: 100%;
+	max-width: 767px;
+	margin: auto;
+}
+
+.ais-GeoSearch-map, #map {
+	height: 300px; /* You can change this height */
+	margin-bottom: 2rem;
+}
+
+#map:not(.ais-GeoSearch-map) {
+	text-align: center;
+	border: 10px dashed gray;
+	display: flex;
+	align-content: center;
+	justify-content: center;
+	align-items: center;
+}
+  

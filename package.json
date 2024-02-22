@@ -1,0 +1,10 @@
+{
+  "name": "yoko-algolia-map-test",
+  "version": "1.0.0",
+  "description": "[View Instructions Here](https://docs.google.com/document/d/1O0uopr_JcNxsDhXTkEaMYuzZYC5wyMi7J8QY2eduZ20/edit?usp=sharing)",
+  "scripts": {
+	"start": "npx http-server -p 8080 ./ -o /index.html"
+  },
+  "author": "Yoko Co",
+  "license": "ISC"
+}
