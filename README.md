@@ -5,3 +5,4 @@
 ## Setup Instructions
 
 1. Copy the `variables-sample.js` file to `variables.js` and add the credentials passed to you.
+2. Run the page with a simple server with `npm start`
