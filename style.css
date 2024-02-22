@@ -23,4 +23,7 @@ body {
 	justify-content: center;
 	align-items: center;
 }
-  
+
+#hits {
+	padding-left: 1rem;
+}
