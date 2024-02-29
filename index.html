@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<title>Yoko Algolia Custom Map Widget Test</title>
+		<meta name="viewport" content="width=device-width,initial-scale=1">
 
 		<!-- Include Algolia InstantSearch.js -->
 		<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/instantsearch.css@8.1.0/themes/reset-min.css" integrity="sha256-2AeJLzExpZvqLUxMfcs+4DWcMwNfpnjUeAAvEtPr0wU=" crossorigin="anonymous">
@@ -25,10 +26,14 @@
 			<!-- Map -->
 			<div id="map">Add Map Here</div>
 
-			<div class="results-and-facets" style="display: flex;">
+			<div class="results-and-facets">
 				<!-- Facets -->
-				<div id="facets" style="max-width: 300px; width: 33.333333%;">
+				<div id="facets">
 					<div id="searchbox"></div>
+					<label class="refine-control">
+						<input id="refine-on-move" type="checkbox">
+						Search on Map Move
+					</label>
 				</div>
 				<!-- Search Results -->
 				<div id="hits" style="flex: 1;"></div>

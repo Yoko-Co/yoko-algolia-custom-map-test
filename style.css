@@ -1,29 +1,136 @@
+:root {
+	--bg-color: #3170b6;
+	--content-bg-color: #fff;
+	--map-control-border-color: #ccc;
+	--map-control-color: #fff;
+	--map-control-text-color: #111;
+}
+
 body {
-	display: flex;
 	align-items: center;
+	background-color: var(--bg-color);
+	display: flex;
+	font-family: system-ui, sans-serif;
+	font-weight: normal;
 	justify-content: center;
 }
 
 #algolia-search {
-	width: 100%;
-	max-width: 767px;
-	margin: auto;
+	background-color: var(--content-bg-color);
+	border-radius: 4px;
+	box-shadow: 1px 1px 4px rgba(0,0,0,0.325);
+	height: clamp(400px, 90vh, 1800px);
+	margin: 0.5rem auto;
+	max-width: 1280px;
+	padding: 1rem;
+	width: 95%;
 }
 
 .ais-GeoSearch-map, #map {
-	height: 300px; /* You can change this height */
+	height: clamp(240px, 33vh, 720px);
 	margin-bottom: 2rem;
 }
 
-#map:not(.ais-GeoSearch-map) {
-	text-align: center;
+#map:not(.leaflet-container) {
+	align-content: center;
+	align-items: center;
 	border: 10px dashed gray;
 	display: flex;
-	align-content: center;
 	justify-content: center;
-	align-items: center;
+	text-align: center;
+}
+
+.results-and-facets {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+}
+
+#facets {
+	flex: 1 1 33.3333%;
+	max-width: 375px;
+	padding: 4px;
 }
 
 #hits {
-	padding-left: 1rem;
+	flex: 1 1 66.666667%;
+	max-height: calc(40vh - 3rem);
+  overflow: auto;
+  padding: 4px;
+}
+
+#hits h3 {
+	margin: 0;
+}
+
+#hits p {
+	margin: 0;
+}
+
+.ais-Hits-item {
+	align-items: flex-start;
+	flex-direction: column;
+	padding: 0.875rem 1.25rem;
+}
+
+.ais-Hits--empty {
+	font-size: 1.25rem;
+}
+
+.refine-control {
+	box-shadow: rgba(49, 112, 182, .3) 0 1px 4px 0 inset;
+	display: block;
+  background-color: rgba(0,0,0,.05);
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  padding: 0.5rem 0.75rem;
+}
+
+.refine-control:hover {
+	cursor: pointer;
+}
+
+.refine-control:has(input:checked) {
+	background-color: rgba(49, 112, 182, 0.175);
+	border-color: var(--bg-color);
+	box-shadow: none;
+}
+
+/* map controls */
+.map-control {
+	background-color: var(--map-control-color);
+	border-radius: 3px;
+	border: solid 2px var(--map-control-border-color);
+	color: var(--map-control-text-color);
+	padding: 0.25rem 0.5rem;
+	position: absolute;
+	z-index: 10000;
+}
+
+.map-btn--reset {
+	bottom: 8px;
+	left: 8px;
+}
+
+/* map tooltips */
+.leaflet-tooltip p {
+	margin: 0;
+	text-align: left;
+	white-space: wrap;
+  min-width: 96px;
+}
+
+.map-marker-name {
+	font-size: 0.875rem;
+	font-weight: 700;
+}
+
+.map-marker-role {
+	font-style: italic;
+}
+
+@media screen and (min-width: 768px) {
+	.ais-GeoSearch-map, #map {
+		height: clamp(240px, 50vh, 720px);
+	}
 }

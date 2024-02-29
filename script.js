@@ -30,9 +30,8 @@ function init( appId, apiKey, index) {
 			container: '#hits',
 			templates: {
 				item: `
-					<div>
-						<h3>{{#helpers.highlight}}{ "attribute": "name" }{{/helpers.highlight}}</h3>
-					</div>
+					<h3 class="hit-name">{{#helpers.highlight}}{ "attribute": "name" }{{/helpers.highlight}}</h3>
+					<p class="hit-role">{{#helpers.highlight}}{ "attribute": "role" }{{/helpers.highlight}}</p>
 				`,
 			},
 		}),
@@ -49,23 +48,28 @@ function init( appId, apiKey, index) {
 	const renderGeoSearch = (renderOptions, isFirstRendering) => {
 		const {
 			items,
+			position,
 			currentRefinement,
 			refine,
+			sendEvent,
 			clearMapRefinement,
-			widgetParams,
+			isRefinedWithMap,
+			toggleRefineOnMapMove,
+			isRefineOnMapMove,
+			setMapMoveSinceLastRefine,
+			hasMapMoveSinceLastRefine,
+			widgetParams
 		} = renderOptions;
-
+		console.log(renderOptions);
 		const {
 			initialZoom,
 			initialPosition,
-			container,
+			container
 		} = widgetParams;
 
 		if (isFirstRendering) {
-			const element = document.getElementById('map');
-			const button = document.createElement('button');
-			button.textContent = 'Clear the map refinement';
-
+			const element = document.querySelector('#map');
+			
 			map = L.map(element);
 
 			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -73,32 +77,48 @@ function init( appId, apiKey, index) {
 					'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 			}).addTo(map);
 
+			// refine result set on movement
 			map.on('moveend', () => {
-				if (isUserInteraction) {
+				if (isUserInteraction && isRefineOnMapMove()) {
 					const ne = map.getBounds().getNorthEast();
 					const sw = map.getBounds().getSouthWest();
-
+					
 					refine({
 						northEast: { lat: ne.lat, lng: ne.lng },
 						southWest: { lat: sw.lat, lng: sw.lng },
 					});
 				}
 			});
-
-			button.addEventListener('click', () => {
-				clearMapRefinement();
+			
+			// toggle for refinement on move
+			const refineControl = document.querySelector('#refine-on-move');
+			refineControl.checked = isRefineOnMapMove() ? 'checked' : '';
+			refineControl.addEventListener('change', function(event) {
+				toggleRefineOnMapMove();
 			});
 
-			container.appendChild(button);
+			// reset map button
+			const resetButton = document.createElement('button');
+			resetButton.className = 'map-control map-btn--reset';
+			resetButton.textContent = 'Reset Map';
+			resetButton.addEventListener('click', () => {
+				clearMapRefinement();
+			});
+			container.appendChild(resetButton);
 		}
 
-		container.querySelector('button').hidden = !currentRefinement;
+		document.querySelector('button').hidden = !currentRefinement;
 
 		markers.forEach(marker => marker.remove());
 	
-		markers = items.map(({ _geoloc }) =>
-			L.marker([_geoloc.lat, _geoloc.lng]).addTo(map)
-		);
+		markers = items.map(({ name, role, _geoloc }) => {
+			let marker = L.marker([_geoloc.lat, _geoloc.lng]);
+			let tooltip = L.tooltip();
+			tooltip.setContent(`<p class="map-marker-name">${name}<p><p class="map-marker-role">${role}</p>`);
+			marker.bindTooltip(tooltip).openTooltip();
+			marker.addTo(map);
+			return marker;
+		});
 
 		isUserInteraction = false;
 		if (!currentRefinement && markers.length) {
@@ -122,7 +142,7 @@ function init( appId, apiKey, index) {
 	search.addWidgets([
 		customGeoSearch(
 			{
-				container: document.getElementById('map'),
+				container: document.querySelector('#map'),
 				initialPosition: {
 					lat: 13.493493107850682,
 					lng: -89.38474698770433
