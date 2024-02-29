@@ -95,7 +95,7 @@ function init( appId, apiKey, index) {
 		container.querySelector('button').hidden = !currentRefinement;
 
 		markers.forEach(marker => marker.remove());
-
+	
 		markers = items.map(({ _geoloc }) =>
 			L.marker([_geoloc.lat, _geoloc.lng]).addTo(map)
 		);
@@ -120,16 +120,29 @@ function init( appId, apiKey, index) {
 
 	// 3. Instantiate
 	search.addWidgets([
-		customGeoSearch({
-			// instance params
-			items: [],
-			initialPosition: {
-				lat: 13.493493107850682,
-    		lng: -89.38474698770433
-			},
-			initialZoom: 13,
-			container: document.getElementById('map')
-		})
+		customGeoSearch(
+			{
+				container: document.getElementById('map'),
+				initialPosition: {
+					lat: 13.493493107850682,
+					lng: -89.38474698770433
+				},
+				initialZoom: 13,
+				transformItems(items) {
+					const newItems = [];
+					for (let i = 0; i < items.length; i++) {
+						const engineer = items[i];
+						for(let l = 0; l < engineer._geoloc.length; l++) {
+							newItems.push({name: engineer.name, role: engineer.role, objectID: engineer.objectID, _geoloc: {
+								lat: engineer._geoloc[l].lat,
+								lng: engineer._geoloc[l].lng,
+							}});
+						}
+					}
+					return newItems;
+				}
+			}
+		)
 	]);
 
 	search.start();
@@ -142,6 +155,8 @@ document.addEventListener('DOMContentLoaded', function() {
 		const appId = ALGOLIA_APP_ID;
 		const apiKey = ALGOLIA_API_KEY;
 		const index = ALGOLIA_INDEX;
+
+		console.log(appId, apiKey, index);
 
 		// Initialize InstantSearch
 		init(appId, apiKey, index);
