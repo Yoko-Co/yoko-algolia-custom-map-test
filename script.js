@@ -38,6 +38,100 @@ function init( appId, apiKey, index) {
 		}),
 	]);
 
+	// Add geoSearch connector
+	const { connectGeoSearch } = instantsearch.connectors;
+
+	// Create the render function
+	let map = null;
+	let markers = [];
+	let isUserInteraction = true;
+
+	const renderGeoSearch = (renderOptions, isFirstRendering) => {
+		const {
+			items,
+			currentRefinement,
+			refine,
+			clearMapRefinement,
+			widgetParams,
+		} = renderOptions;
+
+		const {
+			initialZoom,
+			initialPosition,
+			container,
+		} = widgetParams;
+
+		if (isFirstRendering) {
+			const element = document.getElementById('map');
+			const button = document.createElement('button');
+			button.textContent = 'Clear the map refinement';
+
+			map = L.map(element);
+
+			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+				attribution:
+					'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+			}).addTo(map);
+
+			map.on('moveend', () => {
+				if (isUserInteraction) {
+					const ne = map.getBounds().getNorthEast();
+					const sw = map.getBounds().getSouthWest();
+
+					refine({
+						northEast: { lat: ne.lat, lng: ne.lng },
+						southWest: { lat: sw.lat, lng: sw.lng },
+					});
+				}
+			});
+
+			button.addEventListener('click', () => {
+				clearMapRefinement();
+			});
+
+			container.appendChild(button);
+		}
+
+		container.querySelector('button').hidden = !currentRefinement;
+
+		markers.forEach(marker => marker.remove());
+
+		markers = items.map(({ _geoloc }) =>
+			L.marker([_geoloc.lat, _geoloc.lng]).addTo(map)
+		);
+
+		isUserInteraction = false;
+		if (!currentRefinement && markers.length) {
+			map.fitBounds(L.featureGroup(markers).getBounds(), {
+				animate: false,
+			});
+		} else if (!currentRefinement) {
+			map.setView(initialPosition, initialZoom, {
+				animate: false,
+			});
+		}
+		isUserInteraction = true;
+	};
+
+	// 2. Create the custom widget
+	const customGeoSearch = connectGeoSearch(
+		renderGeoSearch
+	);
+
+	// 3. Instantiate
+	search.addWidgets([
+		customGeoSearch({
+			// instance params
+			items: [],
+			initialPosition: {
+				lat: 13.493493107850682,
+    		lng: -89.38474698770433
+			},
+			initialZoom: 13,
+			container: document.getElementById('map')
+		})
+	]);
+
 	search.start();
 };
 	
