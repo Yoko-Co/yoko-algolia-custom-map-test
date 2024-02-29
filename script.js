@@ -62,7 +62,7 @@ function init( appId, apiKey, index) {
 		} = renderOptions;
 
 		const {
-			container
+			container,
   		googleReference,
   		initialZoom,
   		initialPosition,
