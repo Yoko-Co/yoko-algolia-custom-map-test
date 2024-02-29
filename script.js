@@ -60,11 +60,21 @@ function init( appId, apiKey, index) {
 			hasMapMoveSinceLastRefine,
 			widgetParams
 		} = renderOptions;
-		console.log(renderOptions);
+
 		const {
-			initialZoom,
-			initialPosition,
 			container
+  		googleReference,
+  		initialZoom,
+  		initialPosition,
+  		mapOptions,
+  		builtInMarker,
+			customHTMLMarker,
+  		enableRefine,
+  		enableClearMapRefinement,
+  		enableRefineControl,
+  		enableRefineOnMapMove,
+  		templates,
+  		cssClasses
 		} = widgetParams;
 
 		if (isFirstRendering) {
@@ -175,8 +185,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		const appId = ALGOLIA_APP_ID;
 		const apiKey = ALGOLIA_API_KEY;
 		const index = ALGOLIA_INDEX;
-
-		console.log(appId, apiKey, index);
 
 		// Initialize InstantSearch
 		init(appId, apiKey, index);
