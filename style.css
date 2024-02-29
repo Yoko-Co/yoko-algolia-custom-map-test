@@ -133,4 +133,8 @@ body {
 	.ais-GeoSearch-map, #map {
 		height: clamp(240px, 50vh, 720px);
 	}
+
+	.results-and-facets {
+		flex-wrap: nowrap;
+	}
 }
