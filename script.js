@@ -78,16 +78,21 @@ function init( appId, apiKey, index) {
 		} = widgetParams;
 
 		if (isFirstRendering) {
-			const element = document.querySelector('#map');
-			
-			map = L.map(element);
-
+			// initialize map with Leaflet
+			map = L.map(container);
 			L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
 				attribution:
 					'&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors',
 			}).addTo(map);
 
-			// refine result set on movement
+			// read refine on move setting if provided
+			if (enableRefineOnMapMove && enableRefineOnMapMove !== isRefineOnMapMove()) {
+				// if the provided setting and the current setting don't match, toggle it
+				toggleRefineOnMapMove();
+			} 
+
+			// refine result set on movement event handler
+			// TODO: consider adding and removing this event when refine on move is toggled
 			map.on('moveend', () => {
 				if (isUserInteraction && isRefineOnMapMove()) {
 					const ne = map.getBounds().getNorthEast();
@@ -100,21 +105,28 @@ function init( appId, apiKey, index) {
 				}
 			});
 			
-			// toggle for refinement on move
-			const refineControl = document.querySelector('#refine-on-move');
-			refineControl.checked = isRefineOnMapMove() ? 'checked' : '';
-			refineControl.addEventListener('change', function(event) {
-				toggleRefineOnMapMove();
-			});
+			// toggle for refinement on move if allowed
+			// check if not false - default is true and it may not be explicitly passed in
+			if (enableRefineControl != false) {
+				const refineControl = document.querySelector('#refine-on-move');
+				refineControl.checked = isRefineOnMapMove() ? 'checked' : '';
+				refineControl.addEventListener('change', function(event) {
+					toggleRefineOnMapMove();
+				});
+				document.querySelector('#refine-control').style.display = 'block'; // show toggle control
+			}
 
-			// reset map button
-			const resetButton = document.createElement('button');
-			resetButton.className = 'map-control map-btn--reset';
-			resetButton.textContent = 'Reset Map';
-			resetButton.addEventListener('click', () => {
-				clearMapRefinement();
-			});
-			container.appendChild(resetButton);
+			// reset map button if resetting refinement is allowed
+			// check if not false - default is true and it may not be explicitly passed in
+			if (enableClearMapRefinement != false) {
+				const resetButton = document.createElement('button');
+				resetButton.className = 'map-control map-btn--reset';
+				resetButton.textContent = 'Reset Map';
+				resetButton.addEventListener('click', () => {
+					clearMapRefinement();
+				});
+				container.appendChild(resetButton);
+			}
 		}
 
 		document.querySelector('button').hidden = !currentRefinement;
